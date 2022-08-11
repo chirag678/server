@@ -2,6 +2,7 @@
 
 import WaitlistModel from "../models/waitlistModel.js";
 import { decrypt, encrypt } from "../utils/Crypto.js";
+import { sendMail } from "../utils/Mail.js";
 
 // function to get the waitlist entry by email
 export const getWaitlistEntry = (req, res) => {
@@ -52,6 +53,7 @@ export const createWaitlistEntry = (req, res) => {
       }
       const link = getOneTimeLink(token);
       console.log(link);
+      sendMail(waitlistEntry.email, link);
       return res.status(201).json({ message: "Waitlist entry created", link: link });
     }
   });
