@@ -53,7 +53,7 @@ export const createWaitlistEntry = (req, res) => {
       }
       const link = getOneTimeLink(token);
       console.log(link);
-      sendMail(waitlistEntry.email, link);
+      // sendMail(waitlistEntry.email, link);
       return res.status(201).json({ message: "Waitlist entry created", link: link });
     }
   });
