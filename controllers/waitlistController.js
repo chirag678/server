@@ -2,7 +2,7 @@
 
 import WaitlistModel from "../models/waitlistModel.js";
 import { decrypt, encrypt } from "../utils/Crypto.js";
-import { sendMail } from "../utils/Mail.js";
+import { sendWelcomeMail } from "../mails/index.js";
 
 // function to get the waitlist entry by email
 export const getWaitlistEntry = (req, res) => {
@@ -39,24 +39,25 @@ export const createWaitlistEntry = (req, res) => {
   if (!/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(waitlistEntry.email)) {
     return res.status(400).json({ message: "Invalid Email" }); 
   }
-  waitlistEntry.save((err, waitlistEntry) => {
-    if (err) {
-      console.log(err);
-      return res.status(400).json({ message: err });
-    } else {
-      let token;
-      try {
-        token = encrypt(req.body.params.email);
-      } catch (err) {
-        console.log(err)
-        return res.status(400).json({ message: err });
-      }
-      const link = getOneTimeLink(token);
-      console.log(link);
-      // sendMail(waitlistEntry.email, link);
-      return res.status(201).json({ message: "Waitlist entry created", link: link });
-    }
-  });
+  sendWelcomeMail(waitlistEntry.email);
+  // waitlistEntry.save((err, waitlistEntry) => {
+  //   if (err) {
+  //     console.log(err);
+  //     return res.status(400).json({ message: err });
+  //   } else {
+  //     let token;
+  //     try {
+  //       token = encrypt(req.body.params.email);
+  //     } catch (err) {
+  //       console.log(err)
+  //       return res.status(400).json({ message: err });
+  //     }
+  //     const link = getOneTimeLink(token);
+  //     console.log(link);
+  //     // sendWelcomeMail(waitlistEntry.email, link);
+  //     return res.status(201).json({ message: "Waitlist entry created", link: link });
+  //   }
+  // });
 }
 
 // function to update a wailist entry by email
