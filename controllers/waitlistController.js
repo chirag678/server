@@ -39,29 +39,33 @@ export const createWaitlistEntry = (req, res) => {
   if (!/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(waitlistEntry.email)) {
     return res.status(400).json({ message: "Invalid Email" }); 
   }
-  sendWelcomeMail(waitlistEntry.email);
-  // waitlistEntry.save((err, waitlistEntry) => {
-  //   if (err) {
-  //     console.log(err);
-  //     return res.status(400).json({ message: err });
-  //   } else {
-  //     let token;
-  //     try {
-  //       token = encrypt(req.body.params.email);
-  //     } catch (err) {
-  //       console.log(err)
-  //       return res.status(400).json({ message: err });
-  //     }
-  //     const link = getOneTimeLink(token);
-  //     console.log(link);
-  //     // sendWelcomeMail(waitlistEntry.email, link);
-  //     return res.status(201).json({ message: "Waitlist entry created", link: link });
-  //   }
-  // });
+
+  // for testing
+  // sendWelcomeMail(waitlistEntry.email);
+  // return res.status(201).json({ message: "Waitlist entry created", link: "link" });
+  
+  waitlistEntry.save((err, waitlistEntry) => {
+    if (err) {
+      console.log(err);
+      return res.status(400).json({ message: "Error registering this email" });
+    } else {
+      let token;
+      try {
+        token = encrypt(req.body.params.email);
+      } catch (err) {
+        console.log(err)
+        return res.status(400).json({ message: err });
+      }
+      const link = getOneTimeLink(token);
+      console.log(link);
+      sendWelcomeMail(waitlistEntry.email, link);
+      return res.status(201).json({ message: "Waitlist entry created", link: link });
+    }
+  });
 }
 
 // function to update a wailist entry by email
-// entry is updated with the nft id and claimed is set to true
+// entry is updated with the address and claimed is set to true
 // if the entry is already claimed, the entry is not updated
 export const setWailistClaimed = (req, res) => {
   console.log("setWailistClaimed");
@@ -74,8 +78,8 @@ export const setWailistClaimed = (req, res) => {
     return res.status(400).json(err);
   }
   WaitlistModel.findOneAndUpdate(
-    { email: email, claimed: false, nftId: null },
-    { $set: { nftId: req.body.params.nftId, claimed: true } },
+    { email: email, address: null },
+    { $set: { address: req.body.params.address } },
     { new: true },
     (err, waitlistEntry) => {
       if (err) {
@@ -87,7 +91,7 @@ export const setWailistClaimed = (req, res) => {
           return res.status(200).json({message:"Claimed!", waitlistEntry: waitlistEntry});
         } else {
           console.log('waitlistEntry not found');
-          return res.status(404).json({ message: "Already Claimed" });
+          return res.status(404).json({ message: "You've already claimed!" });s
         }
       }
     }
