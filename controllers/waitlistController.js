@@ -42,7 +42,7 @@ export const createWaitlistEntry = (req, res) => {
 
   // for testing
   // sendWelcomeMail(waitlistEntry.email);
-  // return res.status(201).json({ message: "Waitlist entry created", link: "link" });
+  // return res.status(201).json({ message: "Email Sent", link: "link" });
   
   waitlistEntry.save((err, waitlistEntry) => {
     if (err) {
